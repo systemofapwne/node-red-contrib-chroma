@@ -77,9 +77,36 @@ module.exports = function(RED) {
               if (!Array.isArray(apiCall)) {
                 Object.keys(apiCall).forEach((method,index) => {
                   switch (method) {
-                    case 'cubehelix':
+                    //At the moment, we only support api endpoints, that return a color object
+                    
+                    //Chroma methods
+                    //case 'valid':
+                    case 'hsl':
+                    case 'hsv':
+                    case 'lab':
+                    //case 'getLabWhitePoint':
+                    case 'oklab':
+                    case 'oklch':
+                    case 'cmyk':
+                    case 'gl':
+                    case 'temperature':
+                    case 'mix':
+                    case 'average':
+                    case 'blend':
+                    case 'random':
+                    //case 'contrast':
+                    //case 'contrastAPCA':
+                    //case 'distance':
+                    //case 'deltaE':
+                      
+                    //Chroma sub-classes
                     case 'scale':
+                    case 'cubehelix':
                       color = chroma[method](apiCall[method]);
+                      break;
+                    //Chroma module modifier
+                    case 'setLabWhitePoint':
+                      chroma[method](apiCall[method]);
                       break;
                     default:  
                       if (color === null) color = chroma("#000000");
@@ -104,6 +131,8 @@ module.exports = function(RED) {
                 node.send(msg);
                 return;
               }
+            } else {
+              node.status({fill:"blue", shape:'dot', text:"api(msg.api)=" + (Array.isArray(color) ? "Array()" : color.hex()) + "|" + config.outFormat});
             }
             if (Array.isArray(color)) {
               var chromaArray = [];
